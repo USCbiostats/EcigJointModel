@@ -1,0 +1,53 @@
+---
+title: "A joint model for the initiation and cessation of electronic cigarettes and conventional cigarettes with time-dependent covariates in a longitudinal study"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::html_clean:
+    highlight: kate
+---
+
+
+```{r setup, echo=FALSE, cache=FALSE}
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=FALSE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+```
+
+# Introduction 
+This vigenette is provided to run the models described in the paper "A joint polytomous logistic regression model for the initiation and cessation of electronic cigarettes and conventional cigarettes with time-dependent covariates in a longitudinal study". 
+
+# Methods 
+## Simulating data 
+```{r}
+source("model_functions.R")
+# Parameter specifications 
+nT <- 5 # time
+V <- 4 # number of covariates
+N <- 1000
+
+simstat <- Initiate(nT=nT, V=V)
+sData <- SimulateData(param=simstat, N=N)
+
+X <- sData[["X"]]
+Y <- sData[["Y"]]
+
+```
+
+## Running the single outcome logistic regression model
+
+## Running the joint polytomous logistic regression models with time-dependent covariates
+```{r}
+res_joint <- AnalyzeNew(simstat, X, Y)
+```
+
+# Results comparison 
