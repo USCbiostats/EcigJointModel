@@ -1,7 +1,7 @@
 Introduction
 ============
 
-This vigenette is provided to run the models described in the paper “A
+This vignette is provided to run the models described in the paper “A
 joint polytomous logistic regression model for the initiation and
 cessation of electronic cigarettes and conventional cigarettes with
 time-dependent covariates in a longitudinal study”.
