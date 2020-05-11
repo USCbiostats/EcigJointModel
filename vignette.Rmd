@@ -3,9 +3,8 @@ title: "A joint model for the initiation and cessation of electronic cigarettes 
 author: Zhi Yang, PhD
 date: "`r Sys.Date()`"
 output:
-  md_document:
-    variant: markdown_github
   rmdformats::html_docco:
+    thumbnails: false
     highlight: kate
 ---
 
@@ -40,6 +39,7 @@ V <- 4 # number of covariates
 N <- 1000
 
 simstat <- Initiate(nT=nT, V=V)
+set.seed(2020)
 sData <- SimulateData(param=simstat, N=N)
 
 X <- sData[["X"]]
@@ -64,8 +64,7 @@ head(Y, n = 2)
 
 ## Running the joint polytomous logistic regression models
 ```{r}
-#res_joint <- Analyze(simstat, X, Y)
-load("results.rdata")
+res_joint <- Analyze(simstat, X, Y)
 ```
 
 # Results
@@ -76,10 +75,13 @@ coef_joint <- vec2list(res_joint$par)
 # standard errors 
 sigma_joint <- vec2list(sqrt(diag(solve(-res_joint$hessian))))
 # create 95% CI plots 
+
+head(coef_joint, n=2)
+head(sigma_joint, n=2)
 ```
 
 We displayed the odds ratio plots for important variables $\beta$s and $\gamma$s. 
-```{r}
+```{r oddsratio, fig.width=8}
 df <- data.frame(type = factor(
                    rep(c("Initiation", "Cessation"), each = 2), 
                    levels = c("Initiation", "Cessation")
@@ -109,7 +111,8 @@ ggplot(df, aes(x = cig, y = mean)) +
   coord_flip() +
   ylab("Odds ratio") +
   theme_bw()+
-  theme(text = element_text(size=10),
+  theme(text = element_text(size=15),
+        axis.text.x = element_text(size=8),
         panel.grid.minor = element_blank(),
         legend.position = "top", 
         legend.title = element_blank(), 
