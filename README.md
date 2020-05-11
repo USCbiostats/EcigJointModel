@@ -173,4 +173,4 @@ ggplot(df, aes(x = cig, y = mean)) +
         axis.title.y = element_blank())
 ```
 
-![](vignette_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
