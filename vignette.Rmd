@@ -46,6 +46,22 @@ X <- sData[["X"]]
 Y <- sData[["Y"]]
 ```
 
+## Data overview 
+`simstat` is a list containing parameters like $\lambda$s, $\mu$s, $\alpha$s, $\eta$s, $\beta$s, $\gamma$s, and $\delta$s. 
+```{r}
+simstat
+```
+
+`X` is a list of `N` matrices of nT $\times$ V, each of which contains `V` covariates over `nT` time points for one observation. 
+```{r}
+head(X, n = 2)
+```
+
+`Y` is a list of `N` matrices of nT $\times$ V, each of which contains two outcomes (0: No; 1: Yes) over `nT` time points for one observation. 
+```{r}
+head(Y, n = 2)
+```
+
 ## Running the joint polytomous logistic regression models
 ```{r}
 #res_joint <- Analyze(simstat, X, Y)
@@ -53,13 +69,17 @@ load("results.rdata")
 ```
 
 # Results
+The model yields the coefficients and standard errors of all parameters listed by `simstat`. 
 ```{r}
 # coefficients 
 coef_joint <- vec2list(res_joint$par)
 # standard errors 
 sigma_joint <- vec2list(sqrt(diag(solve(-res_joint$hessian))))
 # create 95% CI plots 
+```
 
+We displayed the odds ratio plots for important variables $\beta$s and $\gamma$s. 
+```{r}
 df <- data.frame(type = factor(
                    rep(c("Initiation", "Cessation"), each = 2), 
                    levels = c("Initiation", "Cessation")
@@ -89,7 +109,7 @@ ggplot(df, aes(x = cig, y = mean)) +
   coord_flip() +
   ylab("Odds ratio") +
   theme_bw()+
-  theme(text = element_text(size=15),
+  theme(text = element_text(size=10),
         panel.grid.minor = element_blank(),
         legend.position = "top", 
         legend.title = element_blank(), 
