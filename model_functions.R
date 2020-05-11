@@ -9,8 +9,10 @@
 #' @return a vector of parmeters 
 Initiate<-function(nT, V){
   P <- 2
-  lambda <- rbind(rep(-2, nT), rep(-3, nT))
-  mu <- rbind(rep(1, nT), rep(2, nT))
+  lambda <- rbind(c(NA, rep(-2, nT-1)), 
+                  c(NA, rep(-3, nT-1)))
+  mu <- rbind(c(NA, rep(1, nT-1)), 
+              c(NA, rep(2, nT-1)))
   alpha <- rbind(sample(c(0.1, 0.2, 0.3), V, replace = TRUE),
                  sample(c(0.1, 0.2, 0.3), V, replace = TRUE))
   eta <- rbind(rep(-0.1, V), 
@@ -130,7 +132,7 @@ SimulateData<-function(param, N=N){
         
         PY<-exp(PY)/sum(exp(PY))
       }else{
-        PY<-TransitionProbabilities(param=simstat, num=n, time=t, Ymat=Y, Xmat=X)
+        PY<-TransitionProbabilities(param=param, num=n, time=t, Ymat=Y, Xmat=X)
       }
       
       #generate the outcome
@@ -152,9 +154,38 @@ SimulateData<-function(param, N=N){
   return(list(X = X, Y = Y))
 }
 
+
+#' Convert the parameter vector to a parameter list 
+#' 
+#' @param param a vector of parameters 
+#' 
+#' @return a list of parameters 
+#' 
+vec2list <- function(param){
+  namesparam <- sub("[^[:alpha:]]+", "", names(param))
+  paramlist <- rep(list(NA), length(unique(namesparam)))
+  names(paramlist) <- unique(namesparam)
+  for(index in unique(namesparam)){
+    if(index %in% c("beta", "gamma")){
+      paramlist[[index]] <- param[grep(index, names(param))]
+    } else if (index == "eta") {
+      paramlist[[index]] <- matrix(param[setdiff(grep("eta", names(param)),
+                                                 grep("beta", names(param)))],
+                                   nrow = 2)
+    } else if (index %in% c("lambda", "mu")) {
+      paramlist[[index]]  <- matrix(c(NA, NA,
+                                      param[grep(index, names(param))]), nrow = 2)
+    } else {
+      paramlist[[index]]  <- matrix(param[grep(index, names(param))], nrow = 2)
+    }
+  }
+  return(paramlist)
+}
+
+
 #' Calulate the likelihood for a given data and a set of parameters
 #' 
-#' @param param a list of parameters
+#' @param param a vector of parameters
 #' @param data a list of X and Y
 #' 
 #' @return a numeric value of likelihood
@@ -167,15 +198,9 @@ LogLikelihood<-function(param, data){
   
   loglike <- 0
   
-  namesparam <- sub("[^[:alpha:]]+", "", names(param))
-  for(index in unique(namesparam)){
-    if(index %in% c("beta", "gamma")){
-      tmp <- param[grep(index, names(param))]
-      assign(index, tmp)
-    } else {
-      tmp <- matrix(param[grep(index, names(param))], nrow = 2)
-      assign(index, tmp)
-    }
+  paramlist <- vec2list(param)
+  for(index in names(paramlist)){
+    assign(index, paramlist[[index]])
   }
   
   #calcualte the likelihood
@@ -189,7 +214,6 @@ LogLikelihood<-function(param, data){
       
       Y0 <- P*tempY[t-1,1] + tempY[t-1, 2] 
       Y1 <- P*tempY[t  ,1] + tempY[t  , 2] 
-      
       
       if(Y0 == 0){
         logProb[2] = sum(lambda[2,t], alpha[2,]*tempX[t-1,])
@@ -228,7 +252,7 @@ LogLikelihood<-function(param, data){
 #' 
 #' @return 
 
-AnalyzeNew<-function(simstat, X, Y){
+Analyze<-function(simstat, X, Y){
   if(length(X)!=length(Y)){
     stop("The lengths of X and Y are not equal.")
   }
@@ -305,6 +329,7 @@ AnalyzeNew<-function(simstat, X, Y){
   }
   
   simstatvec <- unlist(simstat)
+  simstatvec <- simstatvec[!is.na(simstatvec)]
   
   ml <- optim(simstatvec, LogLikelihood, data=list(X, Y), method = "BFGS", hessian=TRUE,
               control = list(fnscale=-1, trace=TRUE, maxit=1000 ))  
