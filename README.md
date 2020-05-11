@@ -202,4 +202,4 @@ ggplot(df, aes(x = cig, y = mean)) +
         axis.title.y = element_blank())
 ```
 
-![](vignette_files/figure-markdown_github/oddsratio-1.png)
+![](index_files/figure-html/oddsratio-1.png)

@@ -1,9 +1,9 @@
 ---
 title: "A joint model for the initiation and cessation of electronic cigarettes and conventional cigarettes with time-dependent covariates in a longitudinal study"
-author: Zhi Yang, PhD
+author: Zhi Yang PhD, Kiros Berhane PhD, Adam Leventhal PhD, Mengyu Liu MS, Jessica L. Barrington-Trimis PhD1, Duncan Thomas PhD 
 date: "`r Sys.Date()`"
 output:
-  rmdformats::html_docco:
+  rmdformats::html_clean:
     thumbnails: false
     highlight: kate
 ---
@@ -27,9 +27,10 @@ opts_knit$set(width=75)
 ```
 
 # Introduction 
-This vigenette is provided to run the models described in the paper "A joint polytomous logistic regression model for the initiation and cessation of electronic cigarettes and conventional cigarettes with time-dependent covariates in a longitudinal study". 
+This vignette is provided to run the models described in the paper "A joint polytomous logistic regression model for the initiation and cessation of electronic cigarettes and conventional cigarettes with time-dependent covariates in a longitudinal study". 
 
 # Methods 
+All functions are stored in `model_functions.R` which includes key functions like `Initiate`, `SimulateData` and `Analyze`. 
 ## Simulating data 
 ```{r}
 source("model_functions.R")
@@ -63,7 +64,7 @@ head(Y, n = 2)
 ```
 
 ## Running the joint polytomous logistic regression models
-```{r}
+```{r cache=TRUE}
 res_joint <- Analyze(simstat, X, Y)
 ```
 
